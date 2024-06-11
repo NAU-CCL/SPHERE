@@ -6,11 +6,16 @@ from sphere.model.solvers import ODESolver
 
 
 class SIRHModel(Model):
+    """
+    An SIRH model, where a hospitalization (H) compartment is added to
+    the standard SIR model.
+    """
     def __init__(self, params: SIRHParameters, solver: ODESolver):
         super().__init__(params, solver)
 
-    def state_transition(self, state, t):
+    def state_transition(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
         S, I, R, H = state
+
         beta, gamma, delta, mu = (
             self.params.beta,
             self.params.gamma,

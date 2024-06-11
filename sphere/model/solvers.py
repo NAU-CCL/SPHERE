@@ -22,6 +22,9 @@ class ODESolver(ABC):
 
 
 class JAXSolver(ODESolver):
+    """
+    JAX-based Dormand-Prince ODE integration with adaptive step size.
+    """
     def solve(
         self,
         func: Callable,

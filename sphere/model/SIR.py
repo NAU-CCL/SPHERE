@@ -6,10 +6,13 @@ from sphere.model.solvers import ODESolver
 
 
 class SIRModel(Model):
+    """
+    A standard SIR compartmental model.
+    """
     def __init__(self, params: SIRParameters, solver: ODESolver):
         super().__init__(params, solver)
 
-    def state_transition(self, state: jnp.ndarray, t) -> jnp.ndarray:
+    def state_transition(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
         S, I, R = state
         beta, gamma = self.params.beta, self.params.gamma
 
@@ -20,4 +23,4 @@ class SIRModel(Model):
         return jnp.array([dS, dI, dR])
 
     def observation(self, state: jnp.ndarray) -> jnp.ndarray:
-        return state
+        return state # observe the entire state

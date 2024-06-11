@@ -16,7 +16,7 @@ class Model(ABC):
         self.solver = solver
 
     @abstractmethod
-    def state_transition(self, state: jnp.ndarray, t) -> jnp.ndarray:
+    def state_transition(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
         pass
 
     @abstractmethod
@@ -24,8 +24,13 @@ class Model(ABC):
         pass
 
     def run(self, time_steps: int) -> jnp.ndarray:
+        """
+        Run the model for the specified number of time steps.
+
+        Return: An array of the system states at each time point.
+        """
         t_span = (0, time_steps)
-        t_eval = jnp.linspace(t_span[0], t_span[1], 100000)
+        t_eval = jnp.linspace(t_span[0], t_span[1], 10000)
         sol = self.solver.solve(
             self.state_transition, self.params.initial_state, t_span, t_eval
         )

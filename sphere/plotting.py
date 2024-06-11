@@ -1,3 +1,7 @@
+"""
+Various plotting functions for quick and easy visualizations.
+"""
+
 import matplotlib.pyplot as plt
 from jax.typing import ArrayLike
 

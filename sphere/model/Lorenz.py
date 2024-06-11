@@ -6,10 +6,14 @@ from sphere.model.solvers import ODESolver
 
 
 class LorenzModel(Model):
+    """
+    A model for the Lorenz System:
+    https://en.wikipedia.org/wiki/Lorenz_system
+    """
     def __init__(self, params: LorenzParameters, solver: ODESolver):
         super().__init__(params, solver)
 
-    def state_transition(self, state: jnp.ndarray, t) -> jnp.ndarray:
+    def state_transition(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
         x, y, z = state
         sigma, rho, beta = self.params.sigma, self.params.rho, self.params.beta
 
