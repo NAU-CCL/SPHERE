@@ -7,7 +7,6 @@ from typing import Callable, Tuple
 
 import jax.numpy as jnp
 from jax.experimental.ode import odeint
-from scipy.integrate import solve_ivp
 
 
 class ODESolver(ABC):
