@@ -2,14 +2,13 @@
 This is an abstract base class for all models.
 """
 
-import jax.numpy as jnp
-
+from jax.typing import ArrayLike
 
 from abc import ABC, abstractmethod
 from sphere.model.parameters import Parameters
 from sphere.model.solvers import ODESolver
-from jax.typing import ArrayLike
 
+import jax.numpy as jnp
 class Model(ABC):
     def __init__(self, params: Parameters, solver: ODESolver):
         self.params = params
