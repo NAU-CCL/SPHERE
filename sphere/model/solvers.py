@@ -2,11 +2,12 @@
 An abstract base class and concrete implementations of ODE solvers.
 """
 
+from abc import ABC, abstractmethod
+from typing import Callable, Tuple
+
 import jax.numpy as jnp
 
 from jax.experimental.ode import odeint
-from abc import ABC, abstractmethod
-from typing import Callable, Tuple
 from jax.typing import ArrayLike
 from jax import Array
 

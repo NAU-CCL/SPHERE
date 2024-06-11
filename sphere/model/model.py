@@ -1,28 +1,30 @@
 """
 This is an abstract base class for all models.
 """
+from abc import ABC, abstractmethod
+
+import jax.numpy as jnp
 
 from jax.typing import ArrayLike
+from jax import Array
 
-from abc import ABC, abstractmethod
 from sphere.model.parameters import Parameters
 from sphere.model.solvers import ODESolver
 
-import jax.numpy as jnp
 class Model(ABC):
     def __init__(self, params: Parameters, solver: ODESolver):
         self.params = params
         self.solver = solver
 
     @abstractmethod
-    def state_transition(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
+    def state_transition(self, state: ArrayLike, t: int) -> Array:
         pass
 
     @abstractmethod
-    def observation(self, state: jnp.ndarray) -> jnp.ndarray:
+    def observation(self, state: ArrayLike, t: int) -> Array:
         pass
 
-    def run(self, time_steps: int) -> jnp.ndarray:
+    def run(self, time_steps: int) -> Array:
         """
         Run the model for the specified number of time steps.
 
