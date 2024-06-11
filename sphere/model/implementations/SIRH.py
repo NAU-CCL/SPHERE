@@ -1,8 +1,8 @@
 import jax.numpy as jnp
 
-from sphere.model.model import Model
-from sphere.model.parameters import SIRHParameters
-from sphere.model.solvers import ODESolver
+from sphere.model.abstract.model import Model
+from sphere.model.abstract.parameters import SIRHParameters
+from sphere.model.abstract.solvers import ODESolver
 
 
 class SIRHModel(Model):
@@ -30,5 +30,5 @@ class SIRHModel(Model):
 
         return jnp.array([dS, dI, dR, dH])
 
-    def observation(self, state: jnp.ndarray) -> jnp.ndarray:
+    def observation(self, state: jnp.ndarray,t:int) -> jnp.ndarray:
         return state[3] # observe hospitalizations

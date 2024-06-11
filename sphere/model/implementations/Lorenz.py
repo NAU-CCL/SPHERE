@@ -1,8 +1,8 @@
 import jax.numpy as jnp
 
-from sphere.model.model import Model
-from sphere.model.parameters import LorenzParameters
-from sphere.model.solvers import ODESolver
+from sphere.model.abstract.model import Model
+from sphere.model.abstract.parameters import LorenzParameters
+from sphere.model.abstract.solvers import ODESolver
 
 
 class LorenzModel(Model):
@@ -24,5 +24,5 @@ class LorenzModel(Model):
         new_state = jnp.array([dx, dy, dz])
         return new_state
 
-    def observation(self, state: jnp.ndarray) -> jnp.ndarray:
+    def observation(self, state: jnp.ndarray,t:int) -> jnp.ndarray:
         return state

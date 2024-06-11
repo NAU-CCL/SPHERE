@@ -1,8 +1,8 @@
 import jax.numpy as jnp
 
-from sphere.model.model import Model
-from sphere.model.parameters import SIRParameters
-from sphere.model.solvers import ODESolver
+from sphere.model.abstract.model import Model
+from sphere.model.abstract.parameters import SIRParameters
+from sphere.model.abstract.solvers import ODESolver
 
 
 class SIRModel(Model):
@@ -22,5 +22,5 @@ class SIRModel(Model):
 
         return jnp.array([dS, dI, dR])
 
-    def observation(self, state: jnp.ndarray) -> jnp.ndarray:
+    def observation(self, state: jnp.ndarray,t:int) -> jnp.ndarray:
         return state # observe the entire state

@@ -8,8 +8,8 @@ import jax.numpy as jnp
 from jax.typing import ArrayLike
 from jax import Array
 
-from sphere.model.parameters import Parameters
-from sphere.model.solvers import ODESolver
+from sphere.model.abstract.parameters import Parameters
+from sphere.model.abstract.solvers import ODESolver
 
 
 class Model(ABC):

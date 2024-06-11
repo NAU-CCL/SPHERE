@@ -1,7 +1,8 @@
 import unittest
 
-from sphere.model import SIR, SIRH, Lorenz
-from sphere.model.parameters import LorenzParameters, SIRHParameters, SIRParameters
+from sphere.model.implementations import SIRH
+from sphere.model.implementations import SIR, Lorenz
+from sphere.model.abstract.parameters import LorenzParameters, SIRHParameters, SIRParameters
 
 
 class TestLorenz(unittest.TestCase):
