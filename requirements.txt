@@ -1,0 +1,2 @@
+jax~=0.4.23
+matplotlib~=3.8.4
