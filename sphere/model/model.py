@@ -11,7 +11,12 @@ from jax import Array
 from sphere.model.parameters import Parameters
 from sphere.model.solvers import ODESolver
 
+
 class Model(ABC):
+
+    params: Parameters
+    solver: ODESolver
+
     def __init__(self, params: Parameters, solver: ODESolver):
         self.params = params
         self.solver = solver
@@ -25,11 +30,26 @@ class Model(ABC):
         pass
 
     def run(self, time_steps: int) -> Array:
-        """
-        Run the model for the specified number of time steps.
+        """Run the model for the specified number of time steps.
 
-        Return: An array of the system states at each time point.
+        The run method is implemented explicitly as its logic is fairly simple, essentially looping 
+        over the model transition method for the specified number of timesteps. 
+
+        Args:
+            time_steps: A python integer representing the number of discrete time steps for 
+            which to run the model.
+
+        Returns:
+            A JAX Array representing the state of the system across all the 
+            time steps specified by the user. The shape of the return array should
+            have the shape (N,time_steps), where N represents the number of state 
+            variables. 
+
+        Raises:
+            Raises no exceptions, enforcement of correct arguments should be enforced at 
+            model creation. 
         """
+
         t_span = (0, time_steps)
         t_eval = jnp.linspace(t_span[0], t_span[1], 10000)
         sol = self.solver.solve(

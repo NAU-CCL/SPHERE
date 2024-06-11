@@ -11,7 +11,6 @@ from jax.experimental.ode import odeint
 from jax.typing import ArrayLike
 from jax import Array
 
-
 class ODESolver(ABC):
     @abstractmethod
     def solve(
