@@ -33,4 +33,4 @@ class LorenzParameters(Parameters):
     sigma: float
     rho: float
     beta: float
-    initial_state: Tuple[float, float, float]
+

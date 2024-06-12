@@ -2,6 +2,7 @@
 This is an abstract base class for all models.
 """
 from abc import ABC, abstractmethod
+from typing import Iterable,Generator
 
 import jax.numpy as jnp
 
@@ -28,6 +29,13 @@ class Model(ABC):
     @abstractmethod
     def observation(self, state: ArrayLike, t: int) -> Array:
         pass
+
+    def steps(self,init_cond:ArrayLike,time_steps:Iterable[int])->Generator:
+        
+        state = init_cond
+        for t in time_steps:
+            state = self.state_transition(state,t)
+            yield self.state_transition
 
     def run(self, time_steps: int) -> Array:
         """Run the model for the specified number of time steps.
