@@ -6,8 +6,13 @@ from sphere.output.abstract import Output
 
 
 class LorenzOutput(Output):
-    def plot_states(self) -> None:
-        """Displays the output of a Lorenz model on a 3D plot."""
+    def plot_states(self, save: bool = False, filename: str = 'lorenz_model_plot.png') -> None:
+        """Displays the output of a Lorenz model on a 3D plot.
+
+        Args:
+            save: If `True`, saves plot to png.
+            filename: The filename to save the plot to.
+        """
         x, y, z = self.states
 
         fig = plt.figure()
@@ -17,12 +22,21 @@ class LorenzOutput(Output):
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')
         plt.title('Lorenz System Solution')
-        plt.show()
+
+        if save:
+            plt.savefig(filename)
+        else:
+            plt.show()
 
 
 class SIROutput(Output):
-    def plot_states(self):
-        """Displays a time series plot for the system state."""
+    def plot_states(self, save: bool = False, filename: str = 'sir_model_plot.png') -> None:
+        """Displays a time series plot for the system state.
+
+        Args:
+           save: If `True`, saves plot to png.
+           filename: The filename to save the plot to.
+        """
         states = jnp.array(self.states)
         fig, ax = plt.subplots()
         ax.plot(states[0, :], label='S')
@@ -32,4 +46,8 @@ class SIROutput(Output):
         ax.set_ylabel('Population')
         ax.legend()
         plt.title('Time Evolution of SIR Model Compartments')
-        plt.show()
+
+        if save:
+            plt.savefig(filename)
+        else:
+            plt.show()
