@@ -21,8 +21,7 @@ class LorenzModel(Model):
         dy = x * (rho - z) - y
         dz = x * y - beta * z
 
-        new_state = jnp.array([dx, dy, dz])
-        return new_state
+        return jnp.array([dx, dy, dz])
 
     def observation(self, state: jnp.ndarray,t:int) -> jnp.ndarray:
         return state

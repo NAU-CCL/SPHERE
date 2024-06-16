@@ -51,7 +51,7 @@ class Model(ABC):
         """
 
         t_span = (0, time_steps)
-        t_eval = jnp.linspace(t_span[0], t_span[1], 10000)
+        t_eval = jnp.linspace(t_span[0], t_span[1], time_steps)
         sol = self.solver.solve(
             self.state_transition, self.params.initial_state, t_span, t_eval
         )

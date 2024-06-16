@@ -6,8 +6,8 @@ from sphere.output.abstract import Output
 
 
 class LorenzOutput(Output):
-    """Displays the output of a Lorenz model on a 3D plot."""
     def plot_states(self) -> None:
+        """Displays the output of a Lorenz model on a 3D plot."""
         x, y, z = self.states
 
         fig = plt.figure()
@@ -22,12 +22,14 @@ class LorenzOutput(Output):
 
 class SIROutput(Output):
     def plot_states(self):
+        """Displays a time series plot for the system state."""
         states = jnp.array(self.states)
         fig, ax = plt.subplots()
-        ax.plot(states[:, 0], label='S')
-        ax.plot(states[:, 1], label='I')
-        ax.plot(states[:, 2], label='R')
+        ax.plot(states[0, :], label='S')
+        ax.plot(states[1, :], label='I')
+        ax.plot(states[2, :], label='R')
         ax.set_xlabel('Time')
         ax.set_ylabel('Population')
         ax.legend()
+        plt.title('Time Evolution of SIR Model Compartments')
         plt.show()
