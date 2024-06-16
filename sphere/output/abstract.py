@@ -8,7 +8,7 @@ class Output(ABC):
     """
     def __init__(self):
         """
-        Stores the model's state at each time point.
+        Store the model's state at each time point.
         The state at time t is stored at self.states[t].
         The initial state is stored at self.states[0].
         """

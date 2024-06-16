@@ -21,6 +21,3 @@ class SIRModel(Model):
         dR = gamma * I
 
         return jnp.array([dS, dI, dR])
-
-    def observation(self, state: jnp.ndarray,t:int) -> jnp.ndarray:
-        return state # observe the entire state

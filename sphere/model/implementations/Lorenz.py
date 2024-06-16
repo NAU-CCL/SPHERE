@@ -23,5 +23,3 @@ class LorenzModel(Model):
 
         return jnp.array([dx, dy, dz])
 
-    def observation(self, state: jnp.ndarray,t:int) -> jnp.ndarray:
-        return state

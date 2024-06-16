@@ -25,10 +25,6 @@ class Model(ABC):
     def state_transition(self, state: ArrayLike, t: int) -> Array:
         pass
 
-    @abstractmethod
-    def observation(self, state: ArrayLike, t: int) -> Array:
-        pass
-
     def run(self, time_steps: int) -> Array:
         """Run the model for the specified number of time steps.
 

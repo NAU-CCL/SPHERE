@@ -30,5 +30,3 @@ class SIRHModel(Model):
 
         return jnp.array([dS, dI, dR, dH])
 
-    def observation(self, state: jnp.ndarray,t:int) -> jnp.ndarray:
-        return state[3] # observe hospitalizations
