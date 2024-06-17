@@ -2,6 +2,7 @@
 The model parameters. An abstract base class is defined.
 Each concrete subclass defines that model's unique parameters.
 """
+
 from abc import ABC
 from dataclasses import dataclass, field
 from typing import Tuple

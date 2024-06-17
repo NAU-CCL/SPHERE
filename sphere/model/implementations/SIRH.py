@@ -10,7 +10,8 @@ class SIRHModel(Model):
     An SIRH model, where a hospitalization (H) compartment is added to
     the standard SIR model.
     """
-    def __init__(self, params: SIRHParameters, solver: ODESolver):
+
+    def __init__(self, params: SIRHParameters, solver: ODESolver) -> None:
         super().__init__(params, solver)
 
     def state_transition(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
@@ -30,3 +31,5 @@ class SIRHModel(Model):
 
         return jnp.array([dS, dI, dR, dH])
 
+    def observation(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
+        return state[3]  # observe hospitalizations
