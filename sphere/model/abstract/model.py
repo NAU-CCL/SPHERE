@@ -9,15 +9,15 @@ from jax import Array
 from jax.typing import ArrayLike
 
 from sphere.model.abstract.parameters import Parameters
-from sphere.model.abstract.solvers import ODESolver
+from sphere.model.abstract.solver import Solver
 
 
 class Model(ABC):
 
     params: Parameters
-    solver: ODESolver
+    solver: Solver
 
-    def __init__(self, params: Parameters, solver: ODESolver) -> None:
+    def __init__(self, params: Parameters, solver: Solver):
         self.params = params
         self.solver = solver
 

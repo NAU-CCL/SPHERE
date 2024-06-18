@@ -2,7 +2,7 @@ import jax.numpy as jnp
 
 from sphere.model.abstract.model import Model
 from sphere.model.abstract.parameters import SIRHParameters
-from sphere.model.abstract.solvers import ODESolver
+from sphere.model.implementations.solvers._solvers import ODESolver
 
 
 class SIRHModel(Model):
