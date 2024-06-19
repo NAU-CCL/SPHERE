@@ -9,7 +9,8 @@ class SIRModel(Model):
     """
     A standard SIR compartmental model.
     """
-    def __init__(self, params: SIRParameters, solver: ODESolver):
+
+    def __init__(self, params: SIRParameters, solver: ODESolver) -> None:
         super().__init__(params, solver)
 
     def state_transition(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
@@ -22,5 +23,5 @@ class SIRModel(Model):
 
         return jnp.array([dS, dI, dR])
 
-    def observation(self, state: jnp.ndarray,t:int) -> jnp.ndarray:
-        return state # observe the entire state
+    def observation(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
+        return state

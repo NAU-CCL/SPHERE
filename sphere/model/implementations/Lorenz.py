@@ -10,6 +10,7 @@ class LorenzModel(Model):
     A model for the Lorenz System:
     https://en.wikipedia.org/wiki/Lorenz_system
     """
+
     def __init__(self, params: LorenzParameters, solver: ODESolver):
         super().__init__(params, solver)
 
@@ -21,8 +22,7 @@ class LorenzModel(Model):
         dy = x * (rho - z) - y
         dz = x * y - beta * z
 
-        new_state = jnp.array([dx, dy, dz])
-        return new_state
+        return jnp.array([dx, dy, dz])
 
-    def observation(self, state: jnp.ndarray,t:int) -> jnp.ndarray:
+    def observation(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
         return state
