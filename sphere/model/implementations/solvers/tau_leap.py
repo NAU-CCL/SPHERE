@@ -25,6 +25,9 @@ class TauLeapSolver(Solver):
     def __init__(self, tau: float, prng_key: Array) -> None:
         super().__init__()
 
+        if(tau <= 0):
+            raise ValueError(f"Tau must be greater than zero! Tau was {tau}. ")
+
         self.tau = tau
         self.prng_key = prng_key
 
@@ -50,5 +53,4 @@ class TauLeapSolver(Solver):
         """
 
         return x_t + random.poisson(key=self.prng_key,
-                                    lam=self.tau * func(x_t, t),
-                                    dtype=DTypeLike[int])
+                                    lam=self.tau * func(x_t, t))

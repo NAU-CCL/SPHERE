@@ -3,12 +3,13 @@ An abstract base class for solving a system through a given time step.
 """
 
 from abc import ABC, abstractmethod
-from typing import Callable
+from typing import Callable,Generator
 
 from jax.typing import ArrayLike
 from jax import Array
 
 class Solver(ABC):
+
     """
     Abstract base class providing an interface for calling one-step solvers for ODEs, SDEs, etc. 
     
@@ -39,3 +40,8 @@ class Solver(ABC):
             JAX or NumPy Array, the return will always be a JAX Array.
 
         """
+
+
+
+    
+
