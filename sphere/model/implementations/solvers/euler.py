@@ -18,6 +18,9 @@ class EulerSolver(Solver):
     def __init__(self,delta_t:float) -> None:
         super().__init__()
 
+        if(delta_t <= 0):
+            raise ValueError(f"Delta_t must be greater than zero! Delta_t was {delta_t}")
+
         self.delta_t = delta_t
 
 
