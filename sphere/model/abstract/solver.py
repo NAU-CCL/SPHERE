@@ -3,7 +3,7 @@ An abstract base class for solving a system through a given time step.
 """
 
 from abc import ABC, abstractmethod
-from typing import Callable,Generator
+from typing import Dict,Callable,List
 
 from jax.typing import ArrayLike
 from jax import Array
@@ -19,19 +19,25 @@ class Solver(ABC):
     underlying system is continuous. 
 
     """
+    req_keys: List[str]
+    args: Dict[str,Callable]
+
+    def __init__(self,args:Dict[str,Callable]) -> None:
+        self.args = args
+
+        for key in self.req_keys:
+            if not key in args:
+                raise KeyError(f"args must contain {key}!")
 
     @abstractmethod
     def solve(
         self,
-        func: Callable[[ArrayLike,float],Array],
         x_t: ArrayLike,
         t: int
     ) -> Array:       
         """Solves the system described by func for a single discrete time step.
 
         Args:
-            func: A function describing the transition rule for the system of interest, arguments 
-            are (x_t, t). Return type is a JAX Array of the same shape as x_t. 
             x_t: The state of the system at time t, a JAX or NumPy Array, used in func. 
             t: The current discrete time step of the system, discretization schemes are left 
             up to the user, used in func. 
