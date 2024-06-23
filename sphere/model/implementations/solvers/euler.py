@@ -1,6 +1,6 @@
 """A simple implementation of a solver using one-step Euler. """
 
-from typing import Callable
+from typing import Callable,Dict
 
 from jax.typing import ArrayLike
 from jax import Array
@@ -15,18 +15,19 @@ class EulerSolver(Solver):
 
     delta_t:float
 
-    def __init__(self,delta_t:float) -> None:
-        super().__init__()
+    req_keys = ['func']
 
-        if(delta_t <= 0):
+    def __init__(self,delta_t:float,args:Dict[str,Callable]) -> None:
+
+        if delta_t <= 0:
             raise ValueError(f"Delta_t must be greater than zero! Delta_t was {delta_t}")
 
+        super().__init__(args = args)
         self.delta_t = delta_t
 
 
     def solve(
     self,
-    func: Callable[[ArrayLike,float],Array],
     x_t: ArrayLike,
     t: int
 ) -> Array:  
@@ -34,8 +35,7 @@ class EulerSolver(Solver):
         using one-step Euler.
 
         Args:
-            func: A function describing the transition rule for the system of interest, arguments 
-            are (x_t, t). Return type is a JAX Array of the same shape as x_t. 
+
             x_t: The state of the system at time t, a JAX or NumPy Array, used in func. 
             t: The current discrete time step of the system, discretization schemes are left 
             up to the user, used in func. 
@@ -45,4 +45,4 @@ class EulerSolver(Solver):
 
         """
 
-        return x_t + self.delta_t * func(x_t,t)     
+        return x_t + self.delta_t * self.args['func'](x_t,t)     
