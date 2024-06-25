@@ -1,11 +1,15 @@
 """A simple implementation of a solver using fixed tau leaping. """
 
-from typing import Callable
+from typing import Callable,Dict
 
-from jax.typing import ArrayLike, DTypeLike
+from jax.typing import ArrayLike
 from jax import Array
 
 from jax import random
+
+import jax.numpy as jnp
+
+import numpy as np
 
 from sphere.model.abstract.solver import Solver
 
@@ -15,21 +19,23 @@ class EulerMaruyamaSolver(Solver):
         An implementation of solver, using the Euler-Maruyama method for SDEs. 
 
         Takes two additional arguments given by delta_t, the euler time-step, 
-        and PRNG_key, the key to pass to JAX random for the brownian draws. 
+        and PRNG_key, the key to pass to JAX random for the Brownian draws. 
     """
 
     delta_t: float
+
     prng_key: Array
 
-    def __init__(self, delta_t: float, prng_key: Array) -> None:
-        super().__init__()
+    req_keys = ['drift','diffusion']
+
+    def __init__(self, delta_t: float, prng_key: Array, args: Dict[str,Callable]) -> None:
+        super().__init__(args = args)
 
         self.delta_t = delta_t
         self.prng_key = prng_key
 
     def solve(
         self,
-        func: Callable[[ArrayLike, float], Array],
         x_t: ArrayLike,
         t: int
     ) -> Array:
@@ -48,6 +54,5 @@ class EulerMaruyamaSolver(Solver):
 
         """
 
-        return x_t + random.poisson(key=self.prng_key,
-                                    lam=self.tau * func(x_t, t),
-                                    dtype=DTypeLike[int])
+        return x_t + self.args['drift'](x_t,t) * self.delta_t + \
+        self.args['diffusion'](x_t,t) * np.random.normal(scale = jnp.sqrt(self.delta_t), size=x_t.shape)
