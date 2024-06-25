@@ -1,39 +1,42 @@
+from typing import TypeVar, Type
+
 from sphere.model.abstract.model import Model
+from sphere.model.implementations.Lorenz import LorenzModel
 from sphere.model.implementations.SIR import SIRModel
 from sphere.output.implementations.SIR import SIROutput
-from sphere.model.abstract.solvers import ODESolver
-from sphere.model.abstract.parameters import Parameters
+from sphere.model.abstract.solvers import ODESolver, JAXSolver
+from sphere.model.abstract.parameters import Parameters, SIRParameters, LorenzParameters
+from sphere.output.implementations.lorenz import LorenzOutput
+from sphere.output.abstract.output import Output
 
-output_classes = {
-    SIRModel: SIROutput()
-}
+some_rume = TypeVar("some_rume", bound="Rume")
 
 
 class Rume:
     """
-    Runnable Modeling Experiment.
+    Base class for the RUME (Runnable Modeling Experiment).
+
+    Class methods create instances of a specific Rume.
     """
-    def __init__(self, model: Model, parameters: Parameters, solver:
-    ODESolver) -> None:
+    def __init__(self, model: Model, output: Output) -> None:
         self.model = model
-        self.parameters = parameters
-        self.solver = solver
-        self.output = None
-        self.__post_init__()
+        self.output = output
 
-    def __post_init__(self):
-        self.set_output()
-        self.validate_input()
+    @classmethod
+    def create_lorenz_rume(
+        cls, parameters: LorenzParameters, solver: ODESolver = JAXSolver()
+    ) -> some_rume:
+        model = LorenzModel(parameters, solver)
+        output = LorenzOutput()
+        return cls(model, output)
 
-    def set_output(self):
-        """Sets the Output class, based on the chosen Model."""
+    @classmethod
+    def create_sir_rume(cls, parameters: SIRParameters, solver: ODESolver =
+    JAXSolver()) \
+            -> some_rume:
+        model = SIRModel(parameters, solver)
+        output = SIROutput()
+        return cls(model, output)
 
-        # Get the corresponding output class for the model
-        output_class = output_classes.get(type(self.model))
-        if output_class is None:
-            raise ValueError(f"No output class defined for model type: {type(self.model)}")
-        # Instantiate the output class
-        self.output = output_class
-
-    def validate_parameters(self):
-        pass
+    def run(self, time_steps: int):
+        self.output.states = self.model.run(time_steps)
