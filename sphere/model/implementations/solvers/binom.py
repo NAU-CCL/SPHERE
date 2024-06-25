@@ -11,7 +11,7 @@ from jax import random
 from sphere.model.abstract.solver import Solver
 
 
-class TauLeapSolver(Solver):
+class BinomSolver(Solver):
     """
         An implementation of solver, uses the approximate stochastic method of 
         tau-leaping described by Gillespie et. al. 
@@ -68,21 +68,3 @@ class TauLeapSolver(Solver):
                     raise ValueError(f"Invalid symbol in transitions! Symbol was {sign}")
 
         return result
-    
-
-# @jit   
-# def solve_helper(x_t:ArrayLike,t:int,lam:Array,transitions:Callable,key:Array) ->Array:
-        
-#         events = random.poisson(key= key,lam = lam)
-
-#         result = x_t.copy()
-
-#         for index,desc in enumerate(transitions()):
-#             for event,sign in desc:
-#                 if sign == '+':
-#                     result = result.at[index].set(result[index] + events[event])
-#                 elif sign == '-': 
-#                     result = result.at[index].set(result[index] - events[event])
-
-#         return jnp.array(result)
-                                    
