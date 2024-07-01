@@ -37,7 +37,7 @@ class TestEuler(unittest.TestCase):
         #for row,dt in enumerate(dts):
         self.euler.delta_t = 1
         for t in range(1,10):
-            self.euler.solve(func,x_t.at[t-1],t)
+            self.euler.solve(func, x_t.at[t - 1], t)
 
         #assert_allclose(x_t,true_vals[0,:])
 

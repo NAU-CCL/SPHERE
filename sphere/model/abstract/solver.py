@@ -3,13 +3,13 @@ An abstract base class for solving a system through a given time step.
 """
 
 from abc import ABC, abstractmethod
-from typing import Dict,Callable,List
+from typing import Dict, Callable, List
 
 from jax.typing import ArrayLike
 from jax import Array
 
-class Solver(ABC):
 
+class Solver(ABC):
     """
     Abstract base class providing an interface for calling one-step solvers for ODEs, SDEs, etc. 
     
@@ -20,25 +20,29 @@ class Solver(ABC):
 
     """
     req_keys: List[str]
-    args: Dict[str,Callable]
 
-    def __init__(self,args:Dict[str,Callable]) -> None:
-        self.args = args
+    def __init__(self, delta_t: float) -> None:
+        self.validate_input(delta_t)
+        self.delta_t = delta_t
+        self.function = None  # initialized in Model.post_init()
 
-        for key in self.req_keys:
-            if not key in args:
-                raise KeyError(f"args must contain {key}!")
+    def validate_input(self, delta_t: float) -> None:
+        if delta_t <= 0:
+            raise ValueError(f"Delta_t must be greater than zero! Delta_t "
+                             f"was {delta_t}.")
 
     @abstractmethod
-    def solve(
-        self,
-        x_t: ArrayLike,
-        t: int
-    ) -> Array:       
+    def solve_one_step(
+            self,
+            x_t: ArrayLike,
+            t: int,
+            function: Callable
+    ) -> Array:
         """Solves the system described by func for a single discrete time step.
 
         Args:
-            x_t: The state of the system at time t, a JAX or NumPy Array, used in func. 
+            function:
+            x_t: The state of the system at time t, a JAX or NumPy Array, used in func.
             t: The current discrete time step of the system, discretization schemes are left 
             up to the user, used in func. 
         Returns:
@@ -46,8 +50,3 @@ class Solver(ABC):
             JAX or NumPy Array, the return will always be a JAX Array.
 
         """
-
-
-
-    
-

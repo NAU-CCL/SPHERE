@@ -16,9 +16,9 @@ class SIROutput(Output):
         """
         states = jnp.array(self.states)
         fig, ax = plt.subplots()
-        ax.plot(states[0, :], label="S")
-        ax.plot(states[1, :], label="I")
-        ax.plot(states[2, :], label="R")
+        ax.plot(states[:, 0], label="S")
+        ax.plot(states[:, 1], label="I")
+        ax.plot(states[:, 2], label="R")
         ax.set_xlabel("Time")
         ax.set_ylabel("Population")
         ax.legend()

@@ -21,6 +21,9 @@ class Model(ABC):
         self.params = params
         self.solver = solver
 
+    def __post_init__(self):
+        self.solver.function = self.state_transition
+
     @abstractmethod
     def state_transition(self, state: ArrayLike, t: int) -> Array:
         pass
@@ -29,15 +32,16 @@ class Model(ABC):
     def observation(self, state: ArrayLike, t: int) -> Array:
         pass
 
-    def run(self, time_steps: int) -> Array:
+    def run(self, x0: ArrayLike, t0: int, t_final: int) -> Array:
         """Run the model for the specified number of time steps.
 
         The run method is implemented explicitly as its logic is fairly simple, essentially looping
         over the model transition method for the specified number of timesteps.
 
         Args:
-            time_steps: A python integer representing the number of discrete time steps for
-            which to run the model.
+            x0: The initial state of the system at time t0, a JAX or NumPy Array, used in func.
+            t0: The initial time step.
+            t_final: The final time step.
 
         Returns:
             A JAX Array representing the state of the system across all the
@@ -49,10 +53,19 @@ class Model(ABC):
             Raises no exceptions, enforcement of correct arguments should be enforced at
             model creation.
         """
+        x0 = jnp.array(x0)
+        num_steps = int((t_final - t0) / self.solver.delta_t) + 1
+        x_t = x0
 
-        t_span = (0, time_steps)
-        t_eval = jnp.linspace(t_span[0], t_span[1], time_steps)
-        sol = self.solver.solve(
-            self.state_transition, self.params.initial_state, t_span, t_eval
-        )
-        return sol
+        t = t0
+
+        # Initialize an array to store the states at each time step
+        trajectory = jnp.zeros((num_steps, *x0.shape))
+        trajectory = trajectory.at[0].set(x0)
+
+        for i in range(1, num_steps):
+            x_t = self.solver.solve_one_step(x_t, t, self.state_transition)
+            t += self.solver.delta_t
+            trajectory = trajectory.at[i].set(x_t)
+
+        return trajectory

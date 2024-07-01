@@ -6,6 +6,7 @@ Each concrete subclass defines that model's unique parameters.
 from abc import ABC
 from dataclasses import dataclass, field
 from typing import Tuple
+import jax.numpy as jnp
 
 
 @dataclass
