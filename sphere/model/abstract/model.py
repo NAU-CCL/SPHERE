@@ -33,7 +33,7 @@ class Model(ABC):
         pass
 
     def run(self, x0: ArrayLike, t0: int, t_final: int) -> Array:
-        """Run the model for the specified number of time steps.
+        """Run the model from t0 to t_final.
 
         The run method is implemented explicitly as its logic is fairly simple, essentially looping
         over the model transition method for the specified number of timesteps.
@@ -46,7 +46,7 @@ class Model(ABC):
         Returns:
             A JAX Array representing the state of the system across all the
             time steps specified by the user. The shape of the return array should
-            have the shape (N,time_steps), where N represents the number of state
+            have the shape (time_steps, N), where N represents the number of state
             variables.
 
         Raises:
