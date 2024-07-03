@@ -8,6 +8,8 @@ from typing import Dict, Callable, List
 from jax.typing import ArrayLike
 from jax import Array
 
+from sphere.model.abstract.transition import Transition, SIRTransition
+
 
 def validate_input(delta_t: float) -> None:
     if delta_t <= 0:
@@ -27,17 +29,16 @@ class Solver(ABC):
     """
     req_keys: List[str]
 
-    def __init__(self, delta_t: float) -> None:
+    def __init__(self, delta_t: float, transition: Transition) -> None:
         validate_input(delta_t)
         self.delta_t = delta_t
-        self.function = None  # initialized in Model.post_init()
+        self.transition = transition  # initialized in Model.post_init()
 
     @abstractmethod
     def solve_one_step(
             self,
             x_t: ArrayLike,
-            t: int,
-            function: Callable
+            t: int
     ) -> Array:
         """Solves the system described by func for a single discrete time step.
 

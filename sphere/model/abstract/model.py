@@ -10,6 +10,7 @@ from jax.typing import ArrayLike
 
 from sphere.model.abstract.parameters import Parameters
 from sphere.model.abstract.solver import Solver
+from sphere.model.abstract.transition import Transition
 
 
 class Model(ABC):
@@ -22,6 +23,7 @@ class Model(ABC):
         self.solver = solver
 
     def __post_init__(self):
+        self.transition = Transition(self.params)
         self.solver.function = self.state_transition
 
     @abstractmethod
@@ -64,7 +66,7 @@ class Model(ABC):
         trajectory = trajectory.at[0].set(x0)
 
         for i in range(1, num_steps):
-            x_t = self.solver.solve_one_step(x_t, t, self.state_transition)
+            x_t = self.solver.solve_one_step(x_t, t)
             t += self.solver.delta_t
             trajectory = trajectory.at[i].set(x_t)
 

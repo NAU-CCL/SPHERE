@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 
 from sphere.output.abstract.output import Output
+import jax.numpy as jnp
 
 
 class LorenzOutput(Output):
@@ -13,6 +14,7 @@ class LorenzOutput(Output):
             save: If `True`, saves plot to png.
             filename: The filename to save the plot to.
         """
+        self.states = jnp.transpose(self.states)
         x, y, z = self.states
 
         fig = plt.figure()

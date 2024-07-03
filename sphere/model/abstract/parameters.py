@@ -18,7 +18,6 @@ class Parameters(ABC):
 class SIRParameters(Parameters):
     beta: float
     gamma: float
-    initial_state: Tuple[float, float, float]
 
 
 @dataclass
@@ -27,7 +26,6 @@ class SIRHParameters(Parameters):
     gamma: float
     delta: float
     mu: float
-    initial_state: Tuple[float, float, float, float]
 
 
 @dataclass
@@ -35,4 +33,3 @@ class LorenzParameters(Parameters):
     sigma: float
     rho: float
     beta: float
-    initial_state: Tuple[float, float, float]

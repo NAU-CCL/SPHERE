@@ -1,6 +1,6 @@
 """A simple implementation of a solver using fixed tau leaping. """
 
-from typing import Callable,Dict
+from typing import Callable, Dict
 
 from jax.typing import ArrayLike
 from jax import Array
@@ -12,6 +12,7 @@ import jax.numpy as jnp
 import numpy as np
 
 from sphere.model.abstract.solver import Solver
+from sphere.model.abstract.transition import Transition
 
 
 class EulerMaruyamaSolver(Solver):
@@ -26,19 +27,16 @@ class EulerMaruyamaSolver(Solver):
 
     prng_key: Array
 
-    req_keys = ['drift','diffusion']
+    req_keys = ['drift', 'diffusion']
 
-    def __init__(self, delta_t: float, prng_key: Array, args: Dict[str, Callable]) -> None:
-        super().__init__(args = args)
-
-        self.delta_t = delta_t
+    def __init__(self, delta_t: float, transition: Transition, prng_key: Array) -> None:
+        super().__init__(delta_t=delta_t, transition=transition)
         self.prng_key = prng_key
 
     def solve_one_step(
             self,
             x_t: ArrayLike,
-            t: int,
-            function: Callable
+            t: int
     ) -> Array:
         """Solves the system described by func for a single discrete time step
         using tau leaping. 
@@ -52,8 +50,7 @@ class EulerMaruyamaSolver(Solver):
         Returns:
             The state of the system at time t+1, a JAX Array. Note, regardless of whether x_t was a
             JAX or NumPy Array, the return will always be a JAX Array.
-
         """
-
-        return x_t + self.args['drift'](x_t,t) * self.delta_t + \
-        self.args['diffusion'](x_t,t) * np.random.normal(scale = jnp.sqrt(self.delta_t), size=x_t.shape)
+        return x_t + self.transition.deterministic(x_t, t) * self.delta_t + \
+            self.transition.stochastic(x_t, t) * np.random.normal(scale=jnp.sqrt(self.delta_t),
+                                                                  size=x_t.shape)

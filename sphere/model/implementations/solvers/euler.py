@@ -8,6 +8,7 @@ import jax.numpy as jnp
 
 from sphere.model.abstract.solver import Solver
 from sphere.model.abstract.model import Model
+from sphere.model.abstract.transition import Transition
 
 
 class EulerSolver(Solver):
@@ -20,10 +21,10 @@ class EulerSolver(Solver):
 
     req_keys = ['func']
 
-    def __init__(self, delta_t: float) -> None:
-        super().__init__(delta_t=delta_t)
+    def __init__(self, delta_t: float, transition: Transition) -> None:
+        super().__init__(delta_t=delta_t, transition=transition)
 
-    def solve_one_step(self, x_t: ArrayLike, t: int, function: Callable) -> (
+    def solve_one_step(self, x_t: ArrayLike, t: int) -> (
             Array):
         """Solves the system described by func for a single discrete time step
         using one-step Euler.
@@ -37,4 +38,6 @@ class EulerSolver(Solver):
             The state of the system at time t+1, a JAX Array. Note, regardless of whether x_t was a
             JAX or NumPy Array, the return will always be a JAX Array.
         """
-        return x_t + self.delta_t * function(x_t, t)
+        return (x_t + self.delta_t * self.transition.deterministic(
+            state=x_t,
+            t=t))
