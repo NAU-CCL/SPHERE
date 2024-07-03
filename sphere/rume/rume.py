@@ -4,7 +4,8 @@ from sphere.model.abstract.model import Model
 from sphere.model.implementations.Lorenz import LorenzModel
 from sphere.model.implementations.SIR import SIRModel
 from sphere.output.implementations.SIR import SIROutput
-from sphere.model.abstract.solvers import ODESolver, JAXSolver
+from sphere.model.abstract.solver import Solver
+from sphere.model.implementations.solvers.euler import EulerSolver
 from sphere.model.abstract.parameters import Parameters, SIRParameters, LorenzParameters
 from sphere.output.implementations.lorenz import LorenzOutput
 from sphere.output.abstract.output import Output
@@ -34,14 +35,15 @@ class Rume:
 
     @classmethod
     def create_lorenz_rume(
-        cls: Type[T], parameters: LorenzParameters, solver: ODESolver = JAXSolver()
+        cls: Type[T], parameters: LorenzParameters, solver: Solver =
+            EulerSolver(delta_t=1000)
     ) -> T:
         """
         Create an instance of a Lorenz RUME.
 
         Args:
             parameters: Parameters for the Lorenz model.
-            solver: Solver to use for the experiment. Defaults to JAXSolver.
+            solver: Solver to use for the experiment. Defaults to EulerSolver.
 
         Returns:
             An instance of the Rume class configured with a Lorenz model.
@@ -52,14 +54,14 @@ class Rume:
 
     @classmethod
     def create_sir_rume(
-        cls, parameters: SIRParameters, solver: ODESolver = JAXSolver()
+        cls, parameters: SIRParameters, solver: Solver = EulerSolver(delta_t=1)
     ) -> T:
         """
         Create an instance of an SIR RUME.
 
         Args:
             parameters: Parameters for the SIR model.
-            solver: Solver to use for the experiment. Defaults to JAXSolver.
+            solver: Solver to use for the experiment. Defaults to EulerSolver.
 
         Returns:
             An instance of the Rume class configured with an SIR model.

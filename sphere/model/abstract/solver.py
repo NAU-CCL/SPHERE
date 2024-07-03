@@ -9,6 +9,12 @@ from jax.typing import ArrayLike
 from jax import Array
 
 
+def validate_input(delta_t: float) -> None:
+    if delta_t <= 0:
+        raise ValueError(f"Delta_t must be greater than zero! Delta_t "
+                         f"was {delta_t}.")
+
+
 class Solver(ABC):
     """
     Abstract base class providing an interface for calling one-step solvers for ODEs, SDEs, etc. 
@@ -22,14 +28,9 @@ class Solver(ABC):
     req_keys: List[str]
 
     def __init__(self, delta_t: float) -> None:
-        self.validate_input(delta_t)
+        validate_input(delta_t)
         self.delta_t = delta_t
         self.function = None  # initialized in Model.post_init()
-
-    def validate_input(self, delta_t: float) -> None:
-        if delta_t <= 0:
-            raise ValueError(f"Delta_t must be greater than zero! Delta_t "
-                             f"was {delta_t}.")
 
     @abstractmethod
     def solve_one_step(
@@ -48,5 +49,4 @@ class Solver(ABC):
         Returns:
             The state of the system at time t+1, a JAX Array. Note, regardless of whether x_t was a
             JAX or NumPy Array, the return will always be a JAX Array.
-
         """

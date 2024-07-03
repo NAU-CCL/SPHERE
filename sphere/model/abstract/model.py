@@ -36,7 +36,7 @@ class Model(ABC):
         """Run the model from t0 to t_final.
 
         The run method is implemented explicitly as its logic is fairly simple, essentially looping
-        over the model transition method for the specified number of timesteps.
+        over the model transition method for the specified number of time steps.
 
         Args:
             x0: The initial state of the system at time t0, a JAX or NumPy Array, used in func.

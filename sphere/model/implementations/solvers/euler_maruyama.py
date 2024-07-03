@@ -28,26 +28,27 @@ class EulerMaruyamaSolver(Solver):
 
     req_keys = ['drift','diffusion']
 
-    def __init__(self, delta_t: float, prng_key: Array, args: Dict[str,Callable]) -> None:
+    def __init__(self, delta_t: float, prng_key: Array, args: Dict[str, Callable]) -> None:
         super().__init__(args = args)
 
         self.delta_t = delta_t
         self.prng_key = prng_key
 
-    def solve(
-        self,
-        x_t: ArrayLike,
-        t: int
+    def solve_one_step(
+            self,
+            x_t: ArrayLike,
+            t: int,
+            function: Callable
     ) -> Array:
         """Solves the system described by func for a single discrete time step
         using tau leaping. 
 
         Args:
-            func: A function describing the transition rule for the system of interest, arguments 
-            are (x_t, t). Return type is a JAX Array of the same shape as x_t. 
+            function: A function describing the transition rule for the system
+             of interest, arguments are (x_t, t). Return type is a JAX Array of the same shape as x_t.
             x_t: The state of the system at time t, a JAX or NumPy Array, used in func. 
             t: The current discrete time step of the system, discretization schemes are left 
-            up to the user, used in func. 
+             up to the user, used in func.
         Returns:
             The state of the system at time t+1, a JAX Array. Note, regardless of whether x_t was a
             JAX or NumPy Array, the return will always be a JAX Array.
