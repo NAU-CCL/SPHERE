@@ -9,8 +9,6 @@ from jax import random
 
 import jax.numpy as jnp
 
-import numpy as np
-
 from sphere.model.abstract.solver import Solver
 
 
@@ -55,4 +53,5 @@ class EulerMaruyamaSolver(Solver):
         """
 
         return x_t + self.args['drift'](x_t,t) * self.delta_t + \
-        self.args['diffusion'](x_t,t) * np.random.normal(scale = jnp.sqrt(self.delta_t), size=x_t.shape)
+        self.args['diffusion'](x_t,t) * jnp.sqrt(self.delta_t) * \
+        random.normal(key = self.prng_key,shape = x_t.shape)

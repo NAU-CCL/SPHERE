@@ -11,7 +11,7 @@ from jax import random
 from sphere.model.abstract.solver import Solver
 
 
-class BinomSolver(Solver):
+class GillespieSolver(Solver):
     """
         An implementation of solver, uses the approximate stochastic method of 
         tau-leaping described by Gillespie et. al. 
@@ -35,6 +35,7 @@ class BinomSolver(Solver):
 
         self.tau = tau
         self.prng_key = prng_key
+        self.application_vec = None
 
     def solve(
         self,
@@ -42,7 +43,7 @@ class BinomSolver(Solver):
         t: int
     ) -> Array:
         """Solves the system described by func for a single discrete time step
-        using tau leaping. 
+        using Gillespie's Algorithm. 
 
         Args:
             x_t: The state of the system at time t, a JAX or NumPy Array, used in func. 
@@ -54,17 +55,21 @@ class BinomSolver(Solver):
 
         """
 
-        events = np.random.poisson(lam = self.tau * self.args['rates'](x_t,t))
+        events = random.poisson(key = self.prng_key,lam = self.tau * self.args['rates'](x_t,t))
 
         result = np.copy(x_t)
 
-        for index,desc in enumerate(self.args['transitions']()):
-            for event,sign in desc:
-                if sign == '+':
-                    result[index] = result[index] + events[event]
-                elif sign == '-': 
-                    result[index] = result[index] - events[event]
-                else: 
-                    raise ValueError(f"Invalid symbol in transitions! Symbol was {sign}")
+        for _,desc in enumerate(self.args['transitions']()):
+            compartment,event,sign = desc
+
+            if sign == '+':
+                result[compartment] = result[compartment] + events[event]
+
+            elif sign == '-': 
+                result[compartment] = result[compartment] - events[event]
+                
+            else: 
+                raise ValueError(f"Invalid symbol in transitions! Symbol was {sign}")
 
         return result
+    

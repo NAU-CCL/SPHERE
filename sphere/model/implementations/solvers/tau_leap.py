@@ -35,6 +35,7 @@ class TauLeapSolver(Solver):
 
         self.tau = tau
         self.prng_key = prng_key
+        self.application_vec = None
 
     def solve(
         self,
@@ -54,35 +55,21 @@ class TauLeapSolver(Solver):
 
         """
 
-        events = np.random.poisson(lam = self.tau * self.args['rates'](x_t,t))
+        events = random.poisson(key = self.prng_key,lam = self.tau * self.args['rates'](x_t,t))
 
         result = np.copy(x_t)
 
-        for index,desc in enumerate(self.args['transitions']()):
-            for event,sign in desc:
-                if sign == '+':
-                    result[index] = result[index] + events[event]
-                elif sign == '-': 
-                    result[index] = result[index] - events[event]
-                else: 
-                    raise ValueError(f"Invalid symbol in transitions! Symbol was {sign}")
+        for _,desc in enumerate(self.args['transitions']()):
+            compartment,event,sign = desc
+
+            if sign == '+':
+                result[compartment] = result[compartment] + events[event]
+
+            elif sign == '-': 
+                result[compartment] = result[compartment] - events[event]
+                
+            else: 
+                raise ValueError(f"Invalid symbol in transitions! Symbol was {sign}")
 
         return result
     
-
-# @jit   
-# def solve_helper(x_t:ArrayLike,t:int,lam:Array,transitions:Callable,key:Array) ->Array:
-        
-#         events = random.poisson(key= key,lam = lam)
-
-#         result = x_t.copy()
-
-#         for index,desc in enumerate(transitions()):
-#             for event,sign in desc:
-#                 if sign == '+':
-#                     result = result.at[index].set(result[index] + events[event])
-#                 elif sign == '-': 
-#                     result = result.at[index].set(result[index] - events[event])
-
-#         return jnp.array(result)
-                                    
