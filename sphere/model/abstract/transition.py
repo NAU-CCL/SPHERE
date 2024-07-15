@@ -6,35 +6,32 @@ from sphere.model.abstract.parameters import Parameters
 
 
 class Transition(ABC):
-    """A base class for defining state transition functions.
-
-    All implementations should have a deterministic transition function.
-
-    Some models may also define a stochastic component. Default is False,
-    which indicates that the model is not stochastic.
     """
-    params: Parameters
-
+    A base class for defining state transition functions.
+    """
     def __init__(self, params: Parameters, is_stochastic: bool = False) -> \
             None:
         self.params = params
-        self.is_stochastic = is_stochastic
 
-    @abstractmethod
-    def deterministic(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
-        """Defines the state transition function for deterministic models."""
+
+class DeterministicTransition(Transition):
+    def function(self):
         pass
 
-    def stochastic(self, state: jnp.ndarray, t: int) -> None:
-        """A stochastic component for state transition functions."""
-        return None
+
+class StochasticTransition(Transition):
+    def drift(self):
+        pass
+
+    def diffusion(self):
+        pass
 
 
-class SIRTransition(Transition):
-    def __init__(self, params: Parameters, is_stochastic: bool = False) -> None:
+class SIRTransition(DeterministicTransition):
+    def __init__(self, params: Parameters) -> None:
         super().__init__(params=params)
 
-    def deterministic(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
+    def function(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
         S, I, R = state
         beta, gamma = self.params.beta, self.params.gamma
 
@@ -45,8 +42,8 @@ class SIRTransition(Transition):
         return jnp.array([dS, dI, dR])
 
 
-class Lorenz63Transition(Transition):
-    def __init__(self, params: Parameters, is_stochastic: bool = False) -> None:
+class Lorenz63Transition(DeterministicTransition):
+    def __init__(self, params: Parameters) -> None:
         super().__init__(params=params)
 
     def deterministic(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
