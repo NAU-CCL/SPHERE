@@ -15,6 +15,7 @@ class Transition(ABC):
 
 
 class DeterministicTransition(Transition):
+    @abstractmethod
     def function(self):
         pass
 
@@ -46,7 +47,7 @@ class Lorenz63Transition(DeterministicTransition):
     def __init__(self, params: Parameters) -> None:
         super().__init__(params=params)
 
-    def deterministic(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
+    def function(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
         x, y, z = state
         sigma, rho, beta = self.params.sigma, self.params.rho, self.params.beta
 
