@@ -9,26 +9,27 @@ class Transition(ABC):
     """
     A base class for defining state transition functions.
     """
-    def __init__(self, params: Parameters, is_stochastic: bool = False) -> \
-            None:
+    def __init__(self, params: Parameters, solver: Solver) -> None:
         self.params = params
-
+        self.solver = solver
 
 class DeterministicTransition(Transition):
     @abstractmethod
     def function(self):
-        pass
+        raise NotImplementedError
 
 
 class StochasticTransition(Transition):
+    @abstractmethod
     def drift(self):
-        pass
+        raise NotImplementedError
 
+    @abstractmethod
     def diffusion(self):
-        pass
+        raise NotImplementedError
 
 
-class SIRTransition(DeterministicTransition):
+class SIRDeterminsticModel(DeterministicTransition):
     def __init__(self, params: Parameters) -> None:
         super().__init__(params=params)
 
