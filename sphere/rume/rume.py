@@ -1,17 +1,17 @@
-from typing import TypeVar, Type
+from typing import Type, TypeVar
 
 from jax.typing import ArrayLike
 
 from sphere.model.abstract.model import Model
+from sphere.model.abstract.transition import Lorenz63Transition, SIRTransition
 from sphere.model.implementations.Lorenz import LorenzModel
 from sphere.model.implementations.SIR import SIRModel
-from sphere.output.implementations.SIR import SIROutput
-from sphere.model.solver import Solver
 from sphere.model.implementations.solvers.euler import EulerSolver
-from sphere.model.parameters import SIRParameters, LorenzParameters
-from sphere.output.implementations.lorenz import LorenzOutput
+from sphere.model.parameters import LorenzParameters, SIRParameters
+from sphere.model.solver import Solver
 from sphere.output.abstract.output import Output
-from sphere.model.abstract.transition import SIRTransition, Lorenz63Transition
+from sphere.output.implementations.lorenz import LorenzOutput
+from sphere.output.implementations.SIR import SIROutput
 
 T = TypeVar("T", bound="Rume")
 
@@ -38,7 +38,8 @@ class Rume:
 
     @classmethod
     def create_lorenz_rume(
-        cls: Type[T], parameters: LorenzParameters, solver: Solver = EulerSolver) -> T:
+        cls: Type[T], parameters: LorenzParameters, solver: Solver = EulerSolver
+    ) -> T:
         """
         Create an instance of a Lorenz RUME.
 
@@ -49,14 +50,15 @@ class Rume:
         Returns:
             An instance of the Rume class configured with a Lorenz model.
         """
-        Lorenz_solver = solver(delta_t=.001, transition=Lorenz63Transition(parameters))
+        Lorenz_solver = solver(delta_t=0.001, transition=Lorenz63Transition(parameters))
         model = LorenzModel(parameters, Lorenz_solver)
         output = LorenzOutput()
         return cls(model, output)
 
     @classmethod
     def create_sir_rume(
-        cls, parameters: SIRParameters, solver: Solver = EulerSolver) -> T:
+        cls, parameters: SIRParameters, solver: Solver = EulerSolver
+    ) -> T:
         """
         Create an instance of an SIR RUME.
 

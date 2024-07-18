@@ -1,7 +1,7 @@
+import jax.numpy as jnp
 from matplotlib import pyplot as plt
 
 from sphere.output.abstract.output import Output
-import jax.numpy as jnp
 
 
 class LorenzOutput(Output):

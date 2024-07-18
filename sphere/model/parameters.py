@@ -5,20 +5,20 @@ Each concrete subclass defines that model's unique parameters.
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Tuple, Any
-import jax.numpy as jnp
+
+from sphere.model.functional_params import FunctionalParam
 
 
-@dataclass
 class Parameters(ABC):
+    """Abstract model parameters class."""
     pass
 
 
-@dataclass
 class SIRParameters(Parameters):
-    beta: FunctionalParam
-    gamma: FunctionalParam
-    population: int
+    def __init__(self, beta: FunctionalParam, gamma: FunctionalParam, population: int) -> None:
+        self._beta = beta
+        self._gamma = gamma
+        self._population = population
 
 
 @dataclass
@@ -35,6 +35,3 @@ class LorenzParameters(Parameters):
     sigma: float
     rho: float
     beta: float
-
-
-

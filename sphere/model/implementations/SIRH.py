@@ -1,8 +1,8 @@
 import jax.numpy as jnp
 
 from sphere.model.abstract.model import Model
-from sphere.model.parameters import SIRHParameters
 from sphere.model.implementations.solvers._solvers import ODESolver
+from sphere.model.parameters import SIRHParameters
 
 
 class SIRHModel(Model):
