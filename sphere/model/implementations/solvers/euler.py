@@ -1,13 +1,9 @@
 """A simple implementation of a solver using one-step Euler. """
 
-from typing import Callable, Dict
-
 from jax.typing import ArrayLike
 from jax import Array
-import jax.numpy as jnp
 
-from sphere.model.abstract.solver import Solver
-from sphere.model.abstract.model import Model
+from sphere.model.solver import Solver
 from sphere.model.abstract.transition import Transition
 
 

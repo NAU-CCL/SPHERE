@@ -1,17 +1,13 @@
 """A simple implementation of a solver using fixed tau leaping. """
 
-from typing import Callable, Dict
-
 from jax.typing import ArrayLike
 from jax import Array
-
-from jax import random
 
 import jax.numpy as jnp
 
 import numpy as np
 
-from sphere.model.abstract.solver import Solver
+from sphere.model.solver import Solver
 from sphere.model.abstract.transition import Transition
 
 
@@ -23,21 +19,11 @@ class EulerMaruyamaSolver(Solver):
         and PRNG_key, the key to pass to JAX random for the Brownian draws. 
     """
 
-    delta_t: float
-
-    prng_key: Array
-
-    req_keys = ['drift', 'diffusion']
-
     def __init__(self, delta_t: float, transition: Transition, prng_key: Array) -> None:
         super().__init__(delta_t=delta_t, transition=transition)
         self.prng_key = prng_key
 
-    def solve_one_step(
-            self,
-            x_t: ArrayLike,
-            t: int
-    ) -> Array:
+    def step(self, x_t: ArrayLike, t: int) -> Array:
         """Solves the system described by func for a single discrete time step
         using tau leaping. 
 

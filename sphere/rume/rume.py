@@ -1,15 +1,14 @@
 from typing import TypeVar, Type
 
-from jax import Array
 from jax.typing import ArrayLike
 
 from sphere.model.abstract.model import Model
 from sphere.model.implementations.Lorenz import LorenzModel
 from sphere.model.implementations.SIR import SIRModel
 from sphere.output.implementations.SIR import SIROutput
-from sphere.model.abstract.solver import Solver
+from sphere.model.solver import Solver
 from sphere.model.implementations.solvers.euler import EulerSolver
-from sphere.model.abstract.parameters import Parameters, SIRParameters, LorenzParameters
+from sphere.model.parameters import SIRParameters, LorenzParameters
 from sphere.output.implementations.lorenz import LorenzOutput
 from sphere.output.abstract.output import Output
 from sphere.model.abstract.transition import SIRTransition, Lorenz63Transition

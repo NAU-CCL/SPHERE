@@ -8,8 +8,8 @@ import jax.numpy as jnp
 from jax import Array
 from jax.typing import ArrayLike
 
-from sphere.model.abstract.parameters import Parameters
-from sphere.model.abstract.solver import Solver
+from sphere.model.parameters import Parameters
+from sphere.model.solver import Solver
 from sphere.model.abstract.transition import Transition
 
 

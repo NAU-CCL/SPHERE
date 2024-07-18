@@ -6,9 +6,8 @@ import numpy as np
 
 from jax.typing import ArrayLike
 from jax import Array
-from jax import random
 
-from sphere.model.abstract.solver import Solver
+from sphere.model.solver import Solver
 
 
 class BinomSolver(Solver):
