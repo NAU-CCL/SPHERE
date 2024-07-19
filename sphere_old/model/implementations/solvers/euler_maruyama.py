@@ -5,7 +5,7 @@ import numpy as np
 from jax import Array
 from jax.typing import ArrayLike
 
-from sphere.model.abstract.transition import Transition
+from sphere.model.transition import Transition
 from sphere.model.solver import Solver
 
 

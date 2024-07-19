@@ -1,7 +1,7 @@
 from jax import numpy as jnp
 from matplotlib import pyplot as plt
 
-from sphere.output.abstract.output import Output
+from sphere.output.abstract import Output
 
 
 class SIROutput(Output):

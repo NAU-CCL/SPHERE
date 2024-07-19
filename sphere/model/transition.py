@@ -1,13 +1,12 @@
 from abc import ABC, abstractmethod
 
 import jax.numpy as jnp
-from jax import Array, random
+from jax import random, Array
 from jax.typing import ArrayLike
 
 from sphere.model.parameters import Parameters, SIRParameters
-from sphere.model.solver import Solver
 
-KeyArray = jax.Array  # type checking for key, as done in jax source code
+KeyArray = Array  # type checking for key, as done in jax source code
 
 
 class Transition(ABC):
@@ -15,9 +14,8 @@ class Transition(ABC):
     A base class for defining state transition functions.
     """
 
-    def __init__(self, params: Parameters, solver: Solver) -> None:
+    def __init__(self, params: Parameters) -> None:
         self.params = params
-        self.solver = solver
 
     @abstractmethod
     def step(self, state, dt):
@@ -29,10 +27,13 @@ class DeterministicTransition(Transition):
     def drift(self, state: ArrayLike, t: int):
         raise NotImplementedError("Subclass must implement this method")
 
+    def step(self, state, dt):
+        return state + self.drift(state) * dt
+
 
 class StochasticTransition(Transition):
-    def __init__(self, params: Parameters, solver: Solver, key: KeyArray) -> None:
-        super().__init__(params, solver)
+    def __init__(self, params: Parameters, key: KeyArray) -> None:
+        super().__init__(params)
         self.key = key
 
     @abstractmethod
@@ -46,20 +47,19 @@ class StochasticTransition(Transition):
     def step(self, state, dt):
         drift = self.drift(state) * dt
         diffusion = (
-            self.diffusion(state)
-            * jnp.sqrt(dt)
-            * random.normal(key=self.key, shape=3)
+            self.diffusion(state) * jnp.sqrt(dt) * random.normal(key=self.key, shape=3)
         )
         return state + drift + diffusion
 
 
 class DeterministicSIR(DeterministicTransition):
-    def __init__(self, params: SIRParameters, solver: Solver) -> None:
-        super().__init__(params, solver)
+    def __init__(self, params: SIRParameters) -> None:
+        super().__init__(params)
 
     def drift(self, state: ArrayLike, t: int) -> jnp.ndarray:
-        beta = self.params.beta.get_current_state(t)
-        gamma = self.params.gamma.get_current_state(t)
+        self.params.update_all()
+        beta = self.params.beta
+        gamma = self.params.gamma
         N = self.params.population
 
         S, I, R = state
@@ -70,18 +70,21 @@ class DeterministicSIR(DeterministicTransition):
 
 
 class StochasticSIR(StochasticTransition):
-    def __init__(self, params: Parameters, solver: Solver) -> None:
-        super().__init__(params=params, solver=solver)
+    def __init__(self, params: Parameters) -> None:
+        super().__init__(params=params)
+        self.beta = self.params.beta
+        self.gamma = self.params.gamma
+        self.N = self.params.population
 
     def drift(self, state: ArrayLike, t: int):
-        beta = self.params.beta.get_current_state(t)
-        gamma = self.params.gamma.get_current_state(t)
-        N = self.params.population
+        self.params.update_all()
+        self.beta = self.params.beta
+        self.gamma = self.params.gamma
 
         S, I, R = state
-        dS = -beta * S * I / N
-        dI = beta * S * I / N - gamma * I
-        dR = gamma * I
+        dS = -self.beta * S * I / self.N
+        dI = self.beta * S * I / self.N - self.gamma * I
+        dR = self.gamma * I
         return jnp.array([dS, dI, dR])
 
     def diffusion(self, state: ArrayLike, t: int):
@@ -96,7 +99,7 @@ class Lorenz63Transition(DeterministicTransition):
     def __init__(self, params: Parameters) -> None:
         super().__init__(params=params)
 
-    def function(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
+    def drift(self, state: jnp.ndarray, t: int) -> jnp.ndarray:
         x, y, z = state
         sigma, rho, beta = self.params.sigma, self.params.rho, self.params.beta
 

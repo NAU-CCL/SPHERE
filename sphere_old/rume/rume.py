@@ -2,16 +2,15 @@ from typing import Type, TypeVar
 
 from jax.typing import ArrayLike
 
-from sphere.model.abstract.model import Model
-from sphere.model.abstract.transition import Lorenz63Transition, SIRTransition
-from sphere.model.implementations.Lorenz import LorenzModel
-from sphere.model.implementations.SIR import SIRModel
-from sphere.model.implementations.solvers.euler import EulerSolver
+from sphere_old.model.abstract.model import Model
+from sphere.model.transition import Lorenz63Transition, SIRTransition
+from sphere_old.model.implementations.lorenz63 import LorenzModel
+from sphere_old.model.implementations.SIR import SIRModel
 from sphere.model.parameters import LorenzParameters, SIRParameters
 from sphere.model.solver import Solver
-from sphere.output.abstract.output import Output
-from sphere.output.implementations.lorenz import LorenzOutput
-from sphere.output.implementations.SIR import SIROutput
+from sphere.output.abstract import Output
+from sphere.output.lorenz63 import LorenzOutput
+from sphere.output.SIR import SIROutput
 
 T = TypeVar("T", bound="Rume")
 
@@ -37,8 +36,8 @@ class Rume:
         self.output = output
 
     @classmethod
-    def create_lorenz_rume(
-        cls: Type[T], parameters: LorenzParameters, solver: Solver = EulerSolver
+    def create_lorenz63_rume(
+        cls: Type[T], parameters: LorenzParameters, solver: Solver
     ) -> T:
         """
         Create an instance of a Lorenz RUME.
@@ -56,9 +55,7 @@ class Rume:
         return cls(model, output)
 
     @classmethod
-    def create_sir_rume(
-        cls, parameters: SIRParameters, solver: Solver = EulerSolver
-    ) -> T:
+    def create_sir_rume(cls, parameters: SIRParameters, solver: Solver) -> T:
         """
         Create an instance of an SIR RUME.
 
@@ -69,6 +66,7 @@ class Rume:
         Returns:
             An instance of the Rume class configured with an SIR model.
         """
+
         SIR_solver = solver(delta_t=1, transition=SIRTransition(parameters))
         model = SIRModel(parameters, SIR_solver)
         output = SIROutput()
@@ -82,3 +80,20 @@ class Rume:
             for Model.run() to simplify the user experience.
         """
         self.output.states = self.model.run(x0, t0, t_final)
+
+
+class RumeFactory:
+    @staticmethod
+    def create_rume(
+        transition: Transition, parameters: Parameters, solver: Solver
+    ) -> Rume:
+        if model_type == "SIR":
+            if stochastic == True:
+                transition = StochasticSIR()
+        elif model_type == "Lorenz63":
+            transition = Lorenz63Transition()
+        else:
+            raise ValueError(f"Unknown model type: {transition}")
+
+        solver.transition = transition
+        return Model(params, solver)

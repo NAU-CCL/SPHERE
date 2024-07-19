@@ -8,33 +8,32 @@ import jax.numpy as jnp
 from jax import Array
 from jax.typing import ArrayLike
 
-from sphere.model.abstract.transition import Transition
+from sphere.model.transition import Transition
 from sphere.model.parameters import Parameters
 from sphere.model.solver import Solver
 
 
 class Model(ABC):
 
-    params: Parameters
-    solver: Solver
-
     def __init__(self, params: Parameters, solver: Solver):
         self.params = params
         self.solver = solver
-
-    def __post_init__(self):
-        self.transition = Transition(self.params)
-        self.solver.function = self.state_transition
+        self.transition: Transition
 
     @abstractmethod
-    def state_transition(self, state: ArrayLike, t: int) -> Array:
-        pass
+    def initialize_transition(self):
+        """This function will assign a transition object to a model.
+
+        Example:
+            An SIRModel would grab the SIRTransition.
+        """
+        raise NotImplementedError("Subclasses must implement this method.")
 
     @abstractmethod
     def observation(self, state: ArrayLike, t: int) -> Array:
         pass
 
-    def run(self, x0: ArrayLike, t0: int, t_final: int) -> Array:
+    def run(self, x0: ArrayLike, t0: int, t_final: int, dt: float) -> Array:
         """Run the model from t0 to t_final.
 
         The run method is implemented explicitly as its logic is fairly simple, essentially looping
@@ -56,18 +55,23 @@ class Model(ABC):
             model creation.
         """
         x0 = jnp.array(x0)
-        num_steps = int((t_final - t0) / self.solver.delta_t) + 1
-        x_t = x0
 
-        t = t0
+        num_output_points = int((t_final - t0)) + 1
+        trajectory = jnp.zeros((num_output_points, *x0.shape))
+        output_times = jnp.arange(t0, t_final + 1)  # Integer time steps
 
-        # Initialize an array to store the states at each time step
-        trajectory = jnp.zeros((num_steps, *x0.shape))
-        trajectory = trajectory.at[0].set(x0)
+        state = x0
+        current_time = t0
+        output_index = 0
 
-        for i in range(1, num_steps):
-            x_t = self.solver.solve_one_step(x_t, t)
-            t += self.solver.delta_t
-            trajectory = trajectory.at[i].set(x_t)
+        # Collect the initial state
+        trajectory[output_index] = state
+
+        for target_time in output_times[1:]:
+            while current_time < target_time:
+                state = self.solver.step(state, self.transition)
+                current_time += self.solver.delta_t
+            trajectory[output_index] = state
+            output_index += 1
 
         return trajectory

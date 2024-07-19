@@ -3,13 +3,12 @@ An abstract base class for solving a system through a given time step.
 """
 
 from abc import ABC, abstractmethod
-from typing import Callable, Dict, List
 
 import jax.numpy as jnp
 from jax import Array, random
 from jax.typing import ArrayLike
 
-from sphere.model.abstract.transition import DeterministicTransition, StochasticTransition
+from sphere.model.transition import DeterministicTransition, Transition
 
 
 def validate_input(delta_t: float) -> None:
@@ -27,10 +26,8 @@ class Solver(ABC):
     for one discrete time step.
     """
 
-    def __init__(self, delta_t: float, transition: Transition) -> None:
-        validate_input(delta_t)
-        self.delta_t = delta_t
-        self.transition = transition  # initialized in Model.post_init()
+    def __init__(self, transition: Transition) -> None:
+        self.transition = transition
 
     @abstractmethod
     def step(self, state: ArrayLike, dt: int) -> Array:
@@ -51,9 +48,22 @@ class Solver(ABC):
                 f"Delta_t must be greater than zero! Delta_t was {delta_t}."
             )
 
+    @abstractmethod
+    def is_stochastic(self) -> bool:
+        raise NotImplementedError("Subclass must implement this method.")
 
-class EulerSolver(Solver):
-    def step(self, model, state, dt, t) -> Array:
+
+class DeterministicSolver(Solver):
+    pass
+
+
+class StochasticSolver(Solver):
+    pass
+
+
+class EulerSolver(DeterministicSolver):
+
+    def step(self, state, dt, t) -> Array:
         """
         Advances the state of the model by one time step using the Euler method.
 
@@ -66,15 +76,16 @@ class EulerSolver(Solver):
         Returns:
             jax.Array: The updated state of the system.
         """
-        drift = model.drift(state, t) * dt
+        drift = self.transition.drift(state, t) * dt
         return state + drift
 
 
-class EulerMaruyamaSolver(Solver):
-    def step(self, transition: DeterministicTransition, state: ArrayLike, dt: float) -> Array:
-        drift = transition.drift(state) * dt
+class EulerMaruyamaSolver(StochasticSolver):
+
+    def step(self, transition: Transition, state: ArrayLike, dt: float) -> Array:
+        drift = self.transition.drift(state) * dt
         diffusion = (
-            transition.diffusion(state)
+            self.transition.diffusion(state)
             * jnp.sqrt(dt)
             * random.normal(size=state.shape)
         )

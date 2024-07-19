@@ -6,7 +6,7 @@ import jax.numpy as jnp
 from jax.typing import DTypeLike
 from numpy.testing import assert_allclose
 
-from sphere.model.implementations.solvers.euler import EulerSolver
+from sphere_old.model.implementations.solvers.euler import EulerSolver
 
 
 class TestEuler(unittest.TestCase):

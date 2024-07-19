@@ -1,13 +1,13 @@
 import jax.numpy as jnp
 
-from sphere.model.abstract.model import Model
-from sphere.model.implementations.solvers._solvers import ODESolver
+from sphere_old.model.abstract.model import Model
+from sphere_old.model.implementations.solvers._solvers import ODESolver
 from sphere.model.parameters import LorenzParameters
 
 
 class LorenzModel(Model):
     """
-    A model for the Lorenz System:
+    A model for the Lorenz 63 System:
     https://en.wikipedia.org/wiki/Lorenz_system
     """
 

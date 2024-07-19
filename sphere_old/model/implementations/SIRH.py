@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 
-from sphere.model.abstract.model import Model
-from sphere.model.implementations.solvers._solvers import ODESolver
+from sphere_old.model.abstract.model import Model
+from sphere_old.model.implementations.solvers._solvers import ODESolver
 from sphere.model.parameters import SIRHParameters
 
 

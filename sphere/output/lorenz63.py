@@ -1,10 +1,10 @@
 import jax.numpy as jnp
 from matplotlib import pyplot as plt
 
-from sphere.output.abstract.output import Output
+from sphere.output.abstract import Output
 
 
-class LorenzOutput(Output):
+class Lorenz63Output(Output):
     def plot_states(
         self, save: bool = False, filename: str = "lorenz_model_plot.png"
     ) -> None:
