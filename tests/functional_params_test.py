@@ -1,6 +1,6 @@
 import unittest
 
-from sphere.model.functional_params import ConstantParam, StepFunctionParam
+from sphere.parameters.functional_params import ConstantParam, StepFunctionParam
 
 
 class TestFunctionalParam(unittest.TestCase):

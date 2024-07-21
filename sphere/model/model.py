@@ -1,16 +1,6 @@
 import jax.numpy as jnp
-from sphere.model.solver import DeterministicSolver, StochasticSolver
-from sphere.model.transition import (
-    StochasticTransition,
-    DeterministicTransition,
-    StochasticSIR,
-    DeterministicSIR,
-    Lorenz63Transition,
-)
-from sphere.model.parameters import SIRParameters, Lorenz63Parameters
 
 from jax.typing import ArrayLike
-from jax import Array
 
 
 class Model:
@@ -42,25 +32,26 @@ class Model:
         self._validate_dt(dt)
         x0 = jnp.array(x0)
 
-        num_output_points = int((t_final - t0)) + 1
-        trajectory = jnp.zeros((num_output_points, *x0.shape))
-        output_times = jnp.arange(t0, t_final + 1)
+        # Calculate the total number of steps
+        total_steps = int((t_final - t0) / dt) + 1
 
+        # Initialize the output storage
+        self.output.states = jnp.zeros((total_steps, *x0.shape))
+
+        # Initialize state and time
         state = x0
         current_time = t0
-        output_index = 0
+        step_index = 0
 
-        # Collect the initial state
-        self.output.store(state)
+        # Store the initial state
+        self.output.store(state, step_index)
 
-        # We run for one discrete time step: t to t+1.
-        # Depending on dt, this may involve intermediary updates.
-        for target_time in output_times[1:]:
-            while current_time < target_time:
-                state = self.solver.step(state=state, dt=dt, t=current_time)
-                current_time += dt
-            self.output.store(state)
-            output_index += 1
+        # Run the model
+        for _ in range(1, total_steps):
+            state = self.solver.step(state=state, dt=dt, t=current_time)
+            current_time += dt
+            step_index += 1
+            self.output.store(state, step_index)
 
         print(
             "Model.run() was successful. Data is accessible at "

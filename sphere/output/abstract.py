@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from jax.typing import ArrayLike
+import jax.numpy as jnp
 
 
 class Output(ABC):
@@ -13,11 +15,11 @@ class Output(ABC):
         The state at time t is stored at self.states[t].
         The initial state is stored at self.states[0].
         """
-        self.states = []
+        self.states = jnp.zeros(0)
 
-    def store(self, state) -> None:
+    def store(self, state: ArrayLike, t: int) -> None:
         """Appends a new state to self.states."""
-        self.states.append(state)
+        self.states = self.states.at[t].set(state)
 
     @abstractmethod
     def plot_states(self) -> None:

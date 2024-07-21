@@ -1,41 +1,8 @@
-from abc import ABC, abstractmethod
+from jax import numpy as jnp
+from jax._src.basearray import ArrayLike
 
-import jax.numpy as jnp
-from jax import random, Array
-from jax.typing import ArrayLike
-
-from sphere.model.parameters import Parameters, SIRParameters
-
-KeyArray = Array  # type checking for key, as done in jax source code
-
-
-class Transition(ABC):
-    """
-    A base class for defining state transition functions.
-    """
-
-    def __init__(self, params: Parameters) -> None:
-        self.params = params
-
-
-class DeterministicTransition(Transition):
-    @abstractmethod
-    def drift(self, state: ArrayLike, t: float):
-        raise NotImplementedError("Subclass must implement this method")
-
-
-class StochasticTransition(Transition):
-    def __init__(self, params: Parameters, key: KeyArray) -> None:
-        super().__init__(params)
-        self.key = key
-
-    @abstractmethod
-    def drift(self, state: ArrayLike, t: float):
-        raise NotImplementedError("Subclass must implement this method")
-
-    @abstractmethod
-    def diffusion(self, state):
-        raise NotImplementedError("Subclass must implement this method")
+from sphere.parameters.parameters import SIRParameters, Parameters
+from sphere.transition.abstract import DeterministicTransition, StochasticTransition
 
 
 class DeterministicSIR(DeterministicTransition):
@@ -71,12 +38,17 @@ class StochasticSIR(StochasticTransition):
         dR = gamma * I
         return jnp.array([dS, dI, dR])
 
-    def diffusion(self, state: ArrayLike, t: float):
+    def diffusion(self, state: ArrayLike, t: float) -> jnp.ndarray:
         S, I, R = state
-        dS = jnp.sqrt(self.params.beta * S * I / self.params.population)
-        dI = jnp.sqrt(self.params.beta * S * I / self.params.population +
-                      self.params.gamma * I)
-        dR = jnp.sqrt(self.params.gamma * I)
+        N = self.params.population
+        beta = self.params.beta
+        gamma = self.params.gamma
+
+        # Noise terms for each compartment
+        dS = jnp.sqrt(beta * S * I / N)
+        dI = jnp.sqrt(beta * S * I / N + gamma * I)
+        dR = jnp.sqrt(gamma * I)
+
         return jnp.array([dS, dI, dR])
 
 

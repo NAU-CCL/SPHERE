@@ -5,7 +5,7 @@ Each concrete subclass defines that model's unique parameters.
 
 from abc import ABC, abstractmethod
 
-from sphere.model.functional_params import FunctionalParam, ConstantParam
+from sphere.parameters.functional_params import FunctionalParam, ConstantParam
 
 
 class Parameters(ABC):

@@ -2,6 +2,9 @@ from jax import numpy as jnp
 from matplotlib import pyplot as plt
 
 from sphere.output.abstract import Output
+from jax import Array
+
+import numpy as np
 
 
 class SIROutput(Output):
@@ -14,7 +17,10 @@ class SIROutput(Output):
            save: If `True`, saves plot to png.
            filename: The filename to save the plot to.
         """
-        states = jnp.array(self.states)
+        if not isinstance(self.states, Array):
+            raise TypeError("plot_states() expects the output states to be of type Jax.Array")
+
+        states = np.array(self.states)
         fig, ax = plt.subplots()
         ax.plot(states[:, 0], label="S")
         ax.plot(states[:, 1], label="I")

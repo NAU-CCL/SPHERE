@@ -14,7 +14,7 @@ class Lorenz63Output(Output):
             save: If `True`, saves plot to png.
             filename: The filename to save the plot to.
         """
-        self.states = jnp.transpose(self.states)
+        self.states = jnp.transpose(jnp.array(self.states))
         x, y, z = self.states
 
         fig = plt.figure()
