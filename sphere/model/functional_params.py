@@ -6,7 +6,7 @@ class FunctionalParam(ABC):
 
     @abstractmethod
     def get_current_value(self, t: int) -> float:
-        """Get the current value of the parameter."""
+        """Get the current value of the parameter at time t."""
         raise NotImplementedError("Subclasses should implement this method.")
 
 

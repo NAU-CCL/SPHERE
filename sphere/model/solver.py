@@ -23,7 +23,7 @@ class Solver(ABC):
         self.transition = transition
 
     @abstractmethod
-    def step(self, state: ArrayLike, dt: float, t: int) -> Array:
+    def step(self, state: ArrayLike, dt: float, t: float) -> Array:
         """Solves the system described by func for a single discrete time step.
 
         Args:
@@ -35,24 +35,17 @@ class Solver(ABC):
         """
         raise NotImplementedError("Subclass must implement this method.")
 
-    @staticmethod
-    def _validate_input(self, delta_t: float):
-        if delta_t <= 0:
-            raise ValueError(
-                f"Delta_t must be greater than zero! Delta_t was {delta_t}."
-            )
-
 
 class DeterministicSolver(Solver, ABC):
     pass
 
 
-class StochasticSolver(Solver):
+class StochasticSolver(Solver, ABC):
     pass
 
 
 class EulerSolver(DeterministicSolver):
-    def step(self, state: ArrayLike, dt: float, t: int) -> Array:
+    def step(self, state: ArrayLike, dt: float, t: float) -> Array:
         """
         Advances the state of the model by one time step using the Euler method.
 
@@ -70,7 +63,7 @@ class EulerSolver(DeterministicSolver):
 
 class EulerMaruyamaSolver(StochasticSolver):
 
-    def step(self, transition: Transition, state: ArrayLike, dt: float) -> Array:
+    def step(self, state: ArrayLike, dt: float, t: float) -> Array:
         drift = self.transition.drift(state) * dt
         diffusion = (
             self.transition.diffusion(state)

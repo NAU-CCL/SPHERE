@@ -87,4 +87,4 @@ class ModelFactory:
         solver = solver_cls(transition)
         output = output_cls()
         solver_cls.transition = transition
-        return Model(params=params, solver=solver, output=output)
+        return Model(solver=solver, output=output)

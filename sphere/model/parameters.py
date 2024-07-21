@@ -3,7 +3,7 @@ The model parameters. An abstract base class is defined.
 Each concrete subclass defines that model's unique parameters.
 """
 
-from abc import ABC
+from abc import ABC, abstractmethod
 
 from sphere.model.functional_params import FunctionalParam, ConstantParam
 
@@ -11,7 +11,9 @@ from sphere.model.functional_params import FunctionalParam, ConstantParam
 class Parameters(ABC):
     """Abstract model parameters class."""
 
-    pass
+    @abstractmethod
+    def update_all(self, t: int):
+        raise NotImplementedError("Subclasses must implement this method.")
 
 
 class SIRParameters(Parameters):
@@ -38,8 +40,6 @@ class SIRParameters(Parameters):
 
     def update_all(self, t: int) -> None:
         """Update all parameters based on the current time step."""
-        self.beta_param.update(t)
-        self.gamma_param.update(t)
         self.beta = self.beta_param.get_current_value(t)
         self.gamma = self.gamma_param.get_current_value(t)
 
@@ -51,3 +51,6 @@ class Lorenz63Parameters(Parameters):
         self.sigma = sigma
         self.rho = rho
         self.beta = beta
+
+    def update_all(self, t: int) -> None:
+        pass

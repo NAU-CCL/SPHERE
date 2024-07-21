@@ -14,12 +14,9 @@ from jax import Array
 
 
 class Model:
-    def __init__(self, params, solver, output):
-        self.params = params
+    def __init__(self, solver, output):
         self.solver = solver
         self.output = output
-        self._validate_model_solver_compatibility()
-        self._validate_params()
 
     def run(self, x0: ArrayLike, t0: int, t_final: int, dt: float) -> None:
         """Run the model from t0 to t_final.
@@ -54,21 +51,20 @@ class Model:
         output_index = 0
 
         # Collect the initial state
-        trajectory.at[output_index].set(state)
+        self.output.store(state)
 
         # We run for one discrete time step: t to t+1.
         # Depending on dt, this may involve intermediary updates.
         for target_time in output_times[1:]:
             while current_time < target_time:
                 state = self.solver.step(state=state, dt=dt, t=current_time)
-                current_time += self.solver.delta_t
-            trajectory[output_index] = state
+                current_time += dt
+            self.output.store(state)
             output_index += 1
 
-        self.output.states = trajectory
         print(
             "Model.run() was successful. Data is accessible at "
-            "Model.output.states. Or, plot the output with "
+            "Model.output.states. Plot the output with "
             "Model.output.plot_states()."
         )
 
@@ -77,32 +73,4 @@ class Model:
         if delta_t <= 0:
             raise ValueError(
                 f"Delta_t must be greater than zero! Delta_t was {delta_t}."
-            )
-
-    def _validate_model_solver_compatibility(self):
-        if isinstance(self.solver, DeterministicSolver) and isinstance(
-            self.solver.transition, StochasticTransition
-        ):
-            raise TypeError(
-                "Cannot use a deterministic solver with a stochastic transition."
-            )
-        if isinstance(self.solver, StochasticSolver) and isinstance(
-            self.solver.transition, DeterministicTransition
-        ):
-            raise TypeError(
-                "Cannot use a stochastic solver with a deterministic transition."
-            )
-
-    def _validate_params(self):
-        if isinstance(
-            self.solver.transition, (DeterministicSIR, StochasticSIR)
-        ) and not isinstance(self.params, SIRParameters):
-            raise TypeError(
-                "Parameters must be of type SIRParameters for SIRTransition."
-            )
-        if isinstance(self.solver.transition, Lorenz63Transition) and not isinstance(
-            self.params, Lorenz63Parameters
-        ):
-            raise TypeError(
-                "Parameters must be of type Lorenz63Parameters for Lorenz63Transition."
             )
