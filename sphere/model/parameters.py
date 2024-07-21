@@ -19,7 +19,7 @@ class SIRParameters(Parameters):
         self,
         beta: FunctionalParam | float,
         gamma: FunctionalParam | float,
-        population: int
+        population: int,
     ) -> None:
         self.beta_param = self._wrap_param(beta)
         self.gamma_param = self._wrap_param(gamma)

@@ -11,13 +11,6 @@ from jax.typing import ArrayLike
 from sphere.model.transition import DeterministicTransition, Transition
 
 
-def validate_input(delta_t: float) -> None:
-    if delta_t <= 0:
-        raise ValueError(
-            f"Delta_t must be greater than zero! Delta_t " f"was {delta_t}."
-        )
-
-
 class Solver(ABC):
     """
     Abstract base class providing an interface for calling one-step solvers for ODEs, SDEs, etc.
@@ -30,14 +23,15 @@ class Solver(ABC):
         self.transition = transition
 
     @abstractmethod
-    def step(self, state: ArrayLike, dt: int) -> Array:
+    def step(self, state: ArrayLike, dt: float, t: int) -> Array:
         """Solves the system described by func for a single discrete time step.
 
         Args:
             state: The state of the system at time t, a JAX or NumPy Array, used in func.
             dt: Time increment for the step.
+            t: Current discrete time step.
         Returns:
-            The state of the system at time t+1, a JAX Array.
+            jax.Array: The updated state of the system.
         """
         raise NotImplementedError("Subclass must implement this method.")
 
@@ -48,12 +42,8 @@ class Solver(ABC):
                 f"Delta_t must be greater than zero! Delta_t was {delta_t}."
             )
 
-    @abstractmethod
-    def is_stochastic(self) -> bool:
-        raise NotImplementedError("Subclass must implement this method.")
 
-
-class DeterministicSolver(Solver):
+class DeterministicSolver(Solver, ABC):
     pass
 
 
@@ -62,15 +52,13 @@ class StochasticSolver(Solver):
 
 
 class EulerSolver(DeterministicSolver):
-
-    def step(self, state, dt, t) -> Array:
+    def step(self, state: ArrayLike, dt: float, t: int) -> Array:
         """
         Advances the state of the model by one time step using the Euler method.
 
         Args:
-            model: The model that provides the drift (and optionally diffusion) functions.
             state: The current state of the system.
-            dt: The time step size.
+            dt: Time increment for the step.
             t: The current time step.
 
         Returns:

@@ -1,6 +1,12 @@
 import jax.numpy as jnp
 from sphere.model.solver import DeterministicSolver, StochasticSolver
-from sphere.model.transition import StochasticTransition, DeterministicTransition, StochasticSIR, DeterministicSIR, Lorenz63Transition
+from sphere.model.transition import (
+    StochasticTransition,
+    DeterministicTransition,
+    StochasticSIR,
+    DeterministicSIR,
+    Lorenz63Transition,
+)
 from sphere.model.parameters import SIRParameters, Lorenz63Parameters
 
 from jax.typing import ArrayLike
@@ -15,7 +21,7 @@ class Model:
         self._validate_model_solver_compatibility()
         self._validate_params()
 
-    def run(self, x0: ArrayLike, t0: int, t_final: int, dt: float) -> Array:
+    def run(self, x0: ArrayLike, t0: int, t_final: int, dt: float) -> None:
         """Run the model from t0 to t_final.
 
         The run method is implemented explicitly as its logic is fairly simple, essentially looping
@@ -48,16 +54,23 @@ class Model:
         output_index = 0
 
         # Collect the initial state
-        trajectory[output_index] = state
+        trajectory.at[output_index].set(state)
 
+        # We run for one discrete time step: t to t+1.
+        # Depending on dt, this may involve intermediary updates.
         for target_time in output_times[1:]:
             while current_time < target_time:
-                state = self.solver.step(state, self.transition)
+                state = self.solver.step(state=state, dt=dt, t=current_time)
                 current_time += self.solver.delta_t
             trajectory[output_index] = state
             output_index += 1
 
-        return trajectory
+        self.output.states = trajectory
+        print(
+            "Model.run() was successful. Data is accessible at "
+            "Model.output.states. Or, plot the output with "
+            "Model.output.plot_states()."
+        )
 
     @staticmethod
     def _validate_dt(delta_t: float):
@@ -65,7 +78,7 @@ class Model:
             raise ValueError(
                 f"Delta_t must be greater than zero! Delta_t was {delta_t}."
             )
-        
+
     def _validate_model_solver_compatibility(self):
         if isinstance(self.solver, DeterministicSolver) and isinstance(
             self.solver.transition, StochasticTransition
@@ -81,9 +94,9 @@ class Model:
             )
 
     def _validate_params(self):
-        if isinstance(self.solver.transition, (DeterministicSIR, StochasticSIR)) and not isinstance(
-            self.params, SIRParameters
-        ):
+        if isinstance(
+            self.solver.transition, (DeterministicSIR, StochasticSIR)
+        ) and not isinstance(self.params, SIRParameters):
             raise TypeError(
                 "Parameters must be of type SIRParameters for SIRTransition."
             )
