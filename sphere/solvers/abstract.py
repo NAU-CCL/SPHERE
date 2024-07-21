@@ -6,7 +6,6 @@ from jax.random import PRNGKey
 
 from sphere.transition.abstract import Transition
 
-
 KeyArray = Array
 
 

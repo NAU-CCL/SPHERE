@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
-from jax.typing import ArrayLike
+
 import jax.numpy as jnp
+from jax.typing import ArrayLike
 
 
 class Output(ABC):

@@ -1,8 +1,9 @@
 from jax import numpy as jnp
 from jax._src.basearray import ArrayLike
 
-from sphere.parameters.parameters import SIRParameters, Parameters
-from sphere.transition.abstract import DeterministicTransition, StochasticTransition
+from sphere.parameters.parameters import Parameters, SIRParameters
+from sphere.transition.abstract import (DeterministicTransition,
+                                        StochasticTransition)
 
 
 class DeterministicSIR(DeterministicTransition):

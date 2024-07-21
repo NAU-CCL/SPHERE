@@ -1,4 +1,6 @@
-from jax import Array, numpy as jnp, random
+from jax import Array
+from jax import numpy as jnp
+from jax import random
 from jax._src.basearray import ArrayLike
 
 from sphere.solvers.abstract import DeterministicSolver, StochasticSolver
@@ -41,7 +43,8 @@ class EulerMaruyamaSolver(StochasticSolver):
         diffusion = (
             self.transition.diffusion(state, t)
             * jnp.sqrt(dt)
-            * random.normal(shape=state.shape, key=subkey) * 0.0001
+            * random.normal(shape=state.shape, key=subkey)
+            * 0.0001
             # TODO: Parameterize this noise in a principled manner.
             #  Remove the `* 0.0001`.
         )

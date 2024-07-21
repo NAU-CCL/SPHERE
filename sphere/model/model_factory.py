@@ -1,11 +1,15 @@
 from typing import Dict, Type
 
 from sphere.model.model import Model
-from sphere.parameters.parameters import SIRParameters, Lorenz63Parameters, Parameters
 from sphere.output.Lorenz63 import Lorenz63Output
 from sphere.output.SIR import SIROutput
-from sphere.solvers.abstract import Solver, DeterministicSolver, StochasticSolver
-from sphere.transition.implementations import DeterministicSIR, StochasticSIR, Lorenz63Transition
+from sphere.parameters.parameters import (Lorenz63Parameters, Parameters,
+                                          SIRParameters)
+from sphere.solvers.abstract import (DeterministicSolver, Solver,
+                                     StochasticSolver)
+from sphere.transition.implementations import (DeterministicSIR,
+                                               Lorenz63Transition,
+                                               StochasticSIR)
 
 
 class ModelFactory:
@@ -74,9 +78,7 @@ class ModelFactory:
             elif issubclass(solver_cls, StochasticSolver):
                 transition = stoch_sir_cls(params)
             else:
-                raise ValueError(
-                    f"{solver_cls} is not compatible with the SIR system."
-                )
+                raise ValueError(f"{solver_cls} is not compatible with the SIR system.")
         elif model_type == "Lorenz63":
             if not issubclass(solver_cls, DeterministicSolver):
                 raise ValueError(
